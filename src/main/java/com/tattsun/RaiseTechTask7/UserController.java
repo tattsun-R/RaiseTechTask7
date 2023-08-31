@@ -1,5 +1,6 @@
 package com.tattsun.RaiseTechTask7;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,16 +31,16 @@ public class UserController {
             }
     }
 
-    @Value("${base.url:http://localhost:8080}")
-    private String baseurl;
+    @Value("${app.baseurl}")
+    private String baseUrl;
 
     @PostMapping("/profiles")
-    public ResponseEntity<CreateResponse> createUserProfile(@org.jetbrains.annotations.NotNull @RequestBody  CreateForm form) {
+    public ResponseEntity<CreateResponse> createUserProfile(@Valid @RequestBody  CreateForm form) {
 
         String name = form.getName();
         LocalDate birthDate = form.getBirthDate();
 
-        URI url = UriComponentsBuilder.fromUriString(baseurl)
+        URI url = UriComponentsBuilder.fromUriString(this.baseUrl)
                 .path("/profiles")
                 .queryParam("name", name)
                 .queryParam("birthDate", birthDate)
