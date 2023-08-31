@@ -13,16 +13,16 @@ import java.util.*;
 @RestController
 public class UserController {
 
-    Map<Integer,String> UserProfile = new LinkedHashMap<>();
+    Map<Integer,String> userProfile = new LinkedHashMap<>();
     {
-        UserProfile.put(1, "Taro Inaba");
-        UserProfile.put(2, "Ichiro Matsumoto");
-        UserProfile.put(3, "Jiro Masuda");
+        userProfile.put(1, "Taro Inaba");
+        userProfile.put(2, "Ichiro Matsumoto");
+        userProfile.put(3, "Jiro Masuda");
     }
 
     @GetMapping("/profiles/{id}")
     public ResponseEntity<UserProfile> getUserProfile (@PathVariable int id) {
-        String userProfile = UserProfile.get(id);
+        String userProfile = this.userProfile.get(id);
             if (userProfile != null) {
                 UserProfile profile = new UserProfile(id, userProfile);
                 return ResponseEntity.ok(profile);
