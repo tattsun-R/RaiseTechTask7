@@ -1,24 +1,19 @@
 package com.tattsun.RaiseTechTask7;
 
-import org.springframework.lang.NonNull;
-
-import java.time.LocalDate;
-
 public class UserProfile {
-
+    private Integer id;
     private String name;
-    private LocalDate birthDate;
 
-    public UserProfile(String name, LocalDate birthDate) {
+    public UserProfile(Integer id, String name) {
+        this.id = id;
         this.name = name;
-        this.birthDate = birthDate;
+        }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getName() {
         return name;
-    }
-
-     public LocalDate getBirthDate() {
-        return birthDate;
     }
 }

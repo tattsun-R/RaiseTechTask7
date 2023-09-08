@@ -1,48 +1,49 @@
 package com.tattsun.RaiseTechTask7;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 public class UserController {
-    @GetMapping("/profiles")
-    public ResponseEntity<List<UserProfile>> getUserProfile(
-        @RequestParam(name = "name", required = false) String name,
-        @RequestParam(name = "birthdate", required = false) String stBirthDate
-    ) {
-        List<UserProfile> userProfiles = new ArrayList<>();
 
-        // nameとbirthdateがnullもしくは空文字でない場合、その値を使用してUserProfileを作成
-        if (name != null && !name.isEmpty() && stBirthDate != null && !stBirthDate.isEmpty()) {
-            try {
-                LocalDate birthDate = LocalDate.parse(stBirthDate);
-                userProfiles.add(new UserProfile(name, birthDate));
-            } catch (DateTimeParseException e) {
-                // 無効な日付の文字列が渡された場合のエラーハンドリング
-                return ResponseEntity.badRequest().build();
-
-            }
-        } else {
-            // クエリ文字列が指定されていない場合、ダミーデータを返す
-            userProfiles.add(new UserProfile("Taro Inaba", LocalDate.of(2004, 9, 23)));
-            userProfiles.add(new UserProfile("Ichiro Matsumoto", LocalDate.of(2000, 3, 27)));
-        }
-
-            return ResponseEntity.ok(userProfiles);
+    Map<Integer,String> userProfile = new LinkedHashMap<>();
+    {
+        userProfile.put(1, "Taro Inaba");
+        userProfile.put(2, "Ichiro Matsumoto");
+        userProfile.put(3, "Jiro Masuda");
     }
 
+    @GetMapping("/profiles/{id}")
+    public ResponseEntity<UserProfile> getUserProfile (@PathVariable int id) {
+        String userProfile = this.userProfile.get(id);
+            if (userProfile != null) {
+                UserProfile profile = new UserProfile(id, userProfile);
+                return ResponseEntity.ok(profile);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+    }
+
+    @Value("${app.baseurl}")
+    private String baseUrl;
+
     @PostMapping("/profiles")
-    public ResponseEntity<CreateResponse> createUserProfile(@RequestBody CreateForm form) {
-        URI url = UriComponentsBuilder.fromUriString("http://localhost:8080")
-                .path("/profiles/1")
+    public ResponseEntity<CreateResponse> createUserProfile(@Valid @RequestBody  CreateForm form) {
+
+        String name = form.getName();
+        LocalDate birthDate = form.getBirthDate();
+
+        URI url = UriComponentsBuilder.fromUriString(this.baseUrl)
+                .path("/profiles")
+                .queryParam("name", name)
+                .queryParam("birthDate", birthDate)
                 .build()
                 .toUri();
               return ResponseEntity.created(url).body(new CreateResponse("UserProfile successfully created"));
